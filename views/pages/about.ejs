@@ -66,25 +66,6 @@
       <% }); %>
     </div>
 
-    <div class="glass-card p-6 sm:p-8" style="border-color:rgba(124,111,247,0.2);">
-      <h2 class="font-semibold text-white mb-3 text-lg">Tech Stack</h2>
-      <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
-        <% [
-          { label: 'Node.js', sub: 'Runtime' },
-          { label: 'Express.js', sub: 'Framework' },
-          { label: 'EJS', sub: 'Template Engine' },
-          { label: 'Tailwind CSS', sub: 'Styling' },
-          { label: 'axios', sub: 'HTTP Client' },
-          { label: 'express-rate-limit', sub: 'Rate Limiting' },
-        ].forEach(t => { %>
-        <div class="rounded-xl px-4 py-3" style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);">
-          <p class="text-sm font-medium text-white font-mono"><%= t.label %></p>
-          <p class="text-xs text-slate-500"><%= t.sub %></p>
-        </div>
-        <% }); %>
-      </div>
-    </div>
-
     <div class="mt-8 text-center">
       <a href="/" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white transition-all" style="background:linear-gradient(135deg,#7c6ff7,#5a4fe0);box-shadow:0 4px 20px rgba(124,111,247,0.3);">
         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>

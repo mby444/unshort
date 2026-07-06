@@ -319,7 +319,7 @@
       btn.disabled          = loading;
       btnText.textContent   = loading ? 'Memproses…' : 'Cek Link';
       btnIcon.innerHTML     = loading ? ICON_SPIN : ICON_SEARCH;
-      btnIcon.className     = loading ? 'w-4 h-4 spinner' : 'w-4 h-4';
+      loading ? btnIcon.classList.add('animate-spin') : btnIcon.classList.remove('animate-spin');
     }
 
     function escapeHtml(str) {
