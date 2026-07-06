@@ -16,7 +16,7 @@ export const renderHome = (req, res) => {
  * Called via axios from the frontend (no page refresh)
  */
 export const checkUrl = async (req, res) => {
-  const { url } = req.body;
+  const { url, enableSafetyCheck } = req.body;
   const inputUrl = (url || "").trim();
 
   if (!inputUrl) {
@@ -31,7 +31,7 @@ export const checkUrl = async (req, res) => {
 
     // Run safety check and metadata fetch in parallel (both non-critical)
     const [safety, metadata] = await Promise.allSettled([
-      checkSafety(finalUrl),
+      checkSafety(finalUrl, !!enableSafetyCheck),
       getMetadata(finalUrl),
     ]);
 

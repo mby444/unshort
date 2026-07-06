@@ -258,7 +258,16 @@
             <span id="btn-text">Cek Link</span>
           </button>
         </div>
-        <p class="text-xs text-slate-500 mt-2.5">
+        
+        <div class="flex items-center mt-4">
+          <label class="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" id="safety-toggle" class="sr-only peer">
+            <div class="w-10 h-5 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-500"></div>
+            <span class="ml-3 text-sm font-medium text-slate-300">Aktifkan Pemeriksaan Keamanan URL (Google Safe Browsing)</span>
+          </label>
+        </div>
+
+        <p class="text-xs text-slate-500 mt-4">
           Kami tidak menyimpan link yang Anda masukkan. Maks. 10 redirect hop, timeout 5 detik/hop.
         </p>
       </form>
@@ -492,7 +501,10 @@
       container.innerHTML = '';
 
       try {
-        const { data } = await axios.post('/check', { url: inputUrl }, {
+        const safetyToggle = document.getElementById('safety-toggle');
+        const enableSafetyCheck = safetyToggle ? safetyToggle.checked : false;
+
+        const { data } = await axios.post('/check', { url: inputUrl, enableSafetyCheck }, {
           headers: { 'Content-Type': 'application/json' },
         });
 
