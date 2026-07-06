@@ -1,5 +1,5 @@
 /**
- * Reveal Link — Session History Manager
+ * Unshort One — Session History Manager
  * Stores and renders URL check history using localStorage.
  */
 

@@ -199,12 +199,10 @@
   <nav class="navbar sticky top-0 z-50">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
       <a href="/" class="flex items-center gap-2 group">
-        <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-brand to-brand-dark flex items-center justify-center">
-          <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
-          </svg>
-        </div>
-        <span class="font-bold text-white text-sm tracking-tight group-hover:text-brand-light transition-colors">Reveal Link</span>
+        <svg class="w-6 h-6 text-[#7c6ff7] group-hover:text-[#a89ef9] transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.25" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+        </svg>
+        <span class="font-bold text-white text-sm tracking-tight group-hover:text-brand-light transition-colors">Unshort One</span>
       </a>
       <div class="flex items-center gap-1">
         <a href="/" class="px-3 py-1.5 rounded-lg text-sm font-medium text-slate-400 hover:text-white hover:bg-white/5 transition-all">Home</a>
@@ -226,7 +224,7 @@
         <span style="background:linear-gradient(135deg,#7c6ff7,#a89ef9,#5eead4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">Balik Short Link</span>
       </h1>
       <p class="text-slate-400 text-base sm:text-lg max-w-lg mx-auto leading-relaxed">
-        Tempel short link (bit.ly, tinyurl, t.co, dll) dan lihat ke mana sebenarnya link itu mengarah — beserta seluruh jejak redirect-nya.
+        Tempel short link (bit.ly, tinyurl, t.co, dll) dan lihat ke mana sebenarnya link itu mengarah beserta seluruh jejak redirect-nya.
       </p>
     </div>
 
@@ -261,14 +259,14 @@
         
         <div class="flex items-center mt-4">
           <label class="relative inline-flex items-center cursor-pointer">
-            <input type="checkbox" id="safety-toggle" class="sr-only peer">
-            <div class="w-10 h-5 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-500"></div>
+            <input type="checkbox" id="safety-toggle" class="sr-only peer shrink-0">
+            <div class="w-11 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[50%] after:left-[2px] after:translate-y-[-50%] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500 shrink-0"></div>
             <span class="ml-3 text-sm font-medium text-slate-300">Aktifkan Pemeriksaan Keamanan URL (Google Safe Browsing)</span>
           </label>
         </div>
 
         <p class="text-xs text-slate-500 mt-4">
-          Kami tidak menyimpan link yang Anda masukkan. Maks. 10 redirect hop, timeout 5 detik/hop.
+          Kami tidak menyimpan link yang Anda masukkan.
         </p>
       </form>
     </div>

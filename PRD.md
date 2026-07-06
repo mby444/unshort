@@ -1,6 +1,6 @@
 # Product Requirements Document (PRD)
 
-## Web Unshortener URL — "Reveal Link"
+## Web Unshortener URL — "Unshort One"
 
 |             |             |
 | ----------- | ----------- |

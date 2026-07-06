@@ -7,7 +7,7 @@ import { getMetadata } from "../lib/metadata.js";
  */
 export const renderHome = (req, res) => {
   res.render("pages/index", {
-    title: "Reveal Link — Ungkap URL Asli di Balik Short Link",
+    title: "Unshort One — Ungkap URL Asli di Balik Short Link",
   });
 };
 
@@ -69,7 +69,7 @@ export const checkUrl = async (req, res) => {
  */
 export const renderAbout = (req, res) => {
   res.render("pages/about", {
-    title: "Tentang — Reveal Link",
+    title: "Tentang — Unshort One",
     activePage: "about",
   });
 };
