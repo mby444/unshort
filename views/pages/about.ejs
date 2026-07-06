@@ -1,25 +1,102 @@
-<%- include('../partials/header') %>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= title %></title>
+  <meta name="description" content="Tentang Reveal Link — tool gratis untuk mengungkap URL asli di balik short link dan melihat redirect chain-nya." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { background-color: #0f0f17; color: #e2e2ef; font-family: 'Inter', sans-serif; }
+    .bg-orb { position: fixed; border-radius: 50%; filter: blur(120px); pointer-events: none; z-index: 0; }
+    .glass-card { background: rgba(22,22,31,0.85); border: 1px solid rgba(255,255,255,0.07); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-radius: 16px; }
+    .navbar { background: rgba(15,15,23,0.85); border-bottom: 1px solid rgba(255,255,255,0.06); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+    .feature-icon { background: rgba(124,111,247,0.12); border: 1px solid rgba(124,111,247,0.2); border-radius: 12px; }
+  </style>
+</head>
+<body class="min-h-screen">
+  <div class="bg-orb w-96 h-96 opacity-20" style="background:#7c6ff7;top:-6rem;left:-6rem;"></div>
+  <div class="bg-orb w-64 h-64 opacity-10" style="background:#5eead4;bottom:0;right:-4rem;"></div>
 
-<div class="max-w-4xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
-    <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-        <div class="p-8">
-            <h1 class="text-3xl font-bold text-gray-900 mb-6">About Us</h1>
-            <div class="prose prose-indigo max-w-none text-gray-600">
-                <p class="text-lg leading-relaxed mb-4">
-                    This project serves as a starting point for building scalable and maintainable Express applications. It leverages the power of ES modules to keep your code modern and clean.
-                </p>
-                <p class="text-lg leading-relaxed mb-4">
-                    By combining <strong>EJS</strong> for templating and <strong>Tailwind CSS</strong> for styling, you can rapidly build beautiful user interfaces without sacrificing flexibility or performance.
-                </p>
-                <div class="mt-8 bg-indigo-50 rounded-lg p-6 border border-indigo-100">
-                    <h2 class="text-xl font-semibold text-indigo-900 mb-2">Need Help?</h2>
-                    <p class="text-indigo-800">
-                        Check out the documentation for Express and Tailwind to learn more about the tools used in this boilerplate.
-                    </p>
-                </div>
-            </div>
+  <nav class="navbar sticky top-0 z-50">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
+      <a href="/" class="flex items-center gap-2 group">
+        <div class="w-7 h-7 rounded-lg flex items-center justify-center" style="background:linear-gradient(135deg,#7c6ff7,#5a4fe0);">
+          <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+          </svg>
         </div>
+        <span class="font-bold text-white text-sm">Reveal Link</span>
+      </a>
+      <div class="flex items-center gap-1">
+        <a href="/" class="px-3 py-1.5 rounded-lg text-sm font-medium text-slate-400 hover:text-white hover:bg-white/5 transition-all">Home</a>
+        <a href="/about" class="px-3 py-1.5 rounded-lg text-sm font-medium text-white bg-white/5">Tentang</a>
+      </div>
     </div>
-</div>
+  </nav>
 
-<%- include('../partials/footer') %>
+  <main class="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
+    <div class="text-center mb-12">
+      <h1 class="text-3xl sm:text-4xl font-extrabold text-white mb-4">Tentang <span style="background:linear-gradient(135deg,#7c6ff7,#a89ef9);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">Reveal Link</span></h1>
+      <p class="text-slate-400 max-w-xl mx-auto leading-relaxed">
+        Tool gratis untuk mengungkap URL asli di balik short link (bit.ly, tinyurl, t.co, dll.) tanpa harus membukanya secara langsung.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-8">
+      <% const features = [
+        { icon: 'M13 10V3L4 14h7v7l9-11h-7z', title: 'Resolve Instan', desc: 'Ikuti redirect hop-demi-hop dan tampilkan URL final secara real-time dalam hitungan detik.' },
+        { icon: 'M4 6h16M4 12h16M4 18h7', title: 'Redirect Chain', desc: 'Lihat seluruh jejak redirect beserta HTTP status code (301, 302, 307, dst) dari tiap hop.' },
+        { icon: 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z', title: 'Indikasi Keamanan', desc: 'Badge keamanan indikatif untuk URL final. Direncanakan integrasi Google Safe Browsing di versi mendatang.' },
+        { icon: 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z', title: 'Riwayat Lokal', desc: 'Link yang pernah Anda cek tersimpan di browser — tanpa akun, tanpa server, privasi terjaga.' },
+      ]; %>
+      <% features.forEach(f => { %>
+      <div class="glass-card p-6">
+        <div class="feature-icon w-10 h-10 flex items-center justify-center mb-4">
+          <svg class="w-5 h-5" style="color:#a89ef9;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="<%= f.icon %>"/>
+          </svg>
+        </div>
+        <h2 class="font-semibold text-white mb-2"><%= f.title %></h2>
+        <p class="text-sm text-slate-400 leading-relaxed"><%= f.desc %></p>
+      </div>
+      <% }); %>
+    </div>
+
+    <div class="glass-card p-6 sm:p-8" style="border-color:rgba(124,111,247,0.2);">
+      <h2 class="font-semibold text-white mb-3 text-lg">Tech Stack</h2>
+      <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+        <% [
+          { label: 'Node.js', sub: 'Runtime' },
+          { label: 'Express.js', sub: 'Framework' },
+          { label: 'EJS', sub: 'Template Engine' },
+          { label: 'Tailwind CSS', sub: 'Styling' },
+          { label: 'axios', sub: 'HTTP Client' },
+          { label: 'express-rate-limit', sub: 'Rate Limiting' },
+        ].forEach(t => { %>
+        <div class="rounded-xl px-4 py-3" style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);">
+          <p class="text-sm font-medium text-white font-mono"><%= t.label %></p>
+          <p class="text-xs text-slate-500"><%= t.sub %></p>
+        </div>
+        <% }); %>
+      </div>
+    </div>
+
+    <div class="mt-8 text-center">
+      <a href="/" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white transition-all" style="background:linear-gradient(135deg,#7c6ff7,#5a4fe0);box-shadow:0 4px 20px rgba(124,111,247,0.3);">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+        Coba Sekarang
+      </a>
+    </div>
+  </main>
+
+  <footer class="relative z-10 border-t border-white/5 mt-8 py-8">
+    <div class="max-w-4xl mx-auto px-4 text-center">
+      <p class="text-xs text-slate-600">Reveal Link — Tidak ada data URL yang disimpan di server.</p>
+    </div>
+  </footer>
+</body>
+</html>

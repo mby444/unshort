@@ -1,24 +1,48 @@
-<%- include('../partials/header') %>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= title %></title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { background-color: #0f0f17; color: #e2e2ef; font-family: 'Inter', sans-serif; }
+    .bg-orb { position: fixed; border-radius: 50%; filter: blur(120px); pointer-events: none; z-index: 0; }
+    .glass-card { background: rgba(22,22,31,0.85); border: 1px solid rgba(255,255,255,0.07); backdrop-filter: blur(16px); border-radius: 16px; }
+    .navbar { background: rgba(15,15,23,0.85); border-bottom: 1px solid rgba(255,255,255,0.06); backdrop-filter: blur(12px); }
+  </style>
+</head>
+<body class="min-h-screen">
+  <div class="bg-orb w-96 h-96 opacity-20" style="background:#7c6ff7; top:-6rem; left:-6rem;"></div>
 
-<div class="min-h-[60vh] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-md w-full text-center space-y-8">
-        <div>
-            <h1 class="text-9xl font-extrabold text-indigo-600 tracking-tight">
-                <%= title.split(' - ')[0] %>
-            </h1>
-            <h2 class="mt-4 text-3xl font-bold text-gray-900">
-                <%= title.split(' - ')[1] %>
-            </h2>
-            <p class="mt-4 text-lg text-gray-500">
-                <%= message %>
-            </p>
-            <div class="mt-8">
-                <a href="/" class="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 transition duration-150 ease-in-out shadow-sm">
-                    Back to Home
-                </a>
-            </div>
+  <nav class="navbar sticky top-0 z-50">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 h-14 flex items-center">
+      <a href="/" class="flex items-center gap-2">
+        <div class="w-7 h-7 rounded-lg flex items-center justify-center" style="background:linear-gradient(135deg,#7c6ff7,#5a4fe0);">
+          <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+          </svg>
         </div>
+        <span class="font-bold text-white text-sm">Reveal Link</span>
+      </a>
     </div>
-</div>
+  </nav>
 
-<%- include('../partials/footer') %>
+  <main class="relative z-10 min-h-[80vh] flex items-center justify-center px-4 py-16">
+    <div class="glass-card p-10 max-w-md w-full text-center">
+      <div class="text-7xl font-extrabold mb-4" style="background:linear-gradient(135deg,#7c6ff7,#a89ef9);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">
+        <%= title.split('—')[0].trim() %>
+      </div>
+      <h1 class="text-xl font-bold text-white mb-3"><%= title.split('—')[1] ? title.split('—')[1].trim() : 'Error' %></h1>
+      <p class="text-slate-400 text-sm mb-8"><%= message %></p>
+      <a href="/" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white transition-all" style="background:linear-gradient(135deg,#7c6ff7,#5a4fe0);box-shadow:0 4px 20px rgba(124,111,247,0.3);">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+        Kembali ke Home
+      </a>
+    </div>
+  </main>
+</body>
+</html>

@@ -1,37 +1,31 @@
 import axios from "axios";
 
 /**
- *Axios instance configuration
+ * Axios instance configuration for URL resolution.
+ * - 5 second timeout per hop (NFR requirement)
+ * - Browser-like User-Agent to avoid blocks from short link services
  */
 const axiosInstance = axios.create({
-  timeout: 10000,
+  timeout: 5000,
   headers: {
-    "Content-Type": "application/json",
+    "User-Agent":
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+    Accept:
+      "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+    "Accept-Language": "en-US,en;q=0.5",
   },
 });
 
 // Request interceptor
 axiosInstance.interceptors.request.use(
-  (config) => {
-    // Modify request before it is sent (e.g., attach auth token)
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  },
+  (config) => config,
+  (error) => Promise.reject(error)
 );
 
-// Response interceptor
+// Response interceptor — suppress console noise, let callers handle errors
 axiosInstance.interceptors.response.use(
-  (response) => {
-    // Any status code that lie within the range of 2xx cause this function to trigger
-    return response;
-  },
-  (error) => {
-    // Any status codes that falls outside the range of 2xx cause this function to trigger
-    console.error("Axios Error:", error.response?.data || error.message);
-    return Promise.reject(error);
-  },
+  (response) => response,
+  (error) => Promise.reject(error)
 );
 
 export default axiosInstance;
