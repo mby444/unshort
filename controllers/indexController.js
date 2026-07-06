@@ -3,36 +3,30 @@ import { checkSafety } from "../lib/safetyCheck.js";
 import { getMetadata } from "../lib/metadata.js";
 
 /**
- * Renders the home page
+ * Renders the home page (no result, no error — handled client-side via axios)
  */
 export const renderHome = (req, res) => {
   res.render("pages/index", {
     title: "Reveal Link — Ungkap URL Asli di Balik Short Link",
-    result: null,
-    error: null,
-    inputUrl: "",
   });
 };
 
 /**
- * Handles POST /check — resolves a short URL and renders results
+ * POST /check — resolves a short URL and returns JSON
+ * Called via axios from the frontend (no page refresh)
  */
 export const checkUrl = async (req, res) => {
   const { url } = req.body;
   const inputUrl = (url || "").trim();
 
-  // Basic empty check before calling the lib
   if (!inputUrl) {
-    return res.render("pages/index", {
-      title: "Reveal Link — Ungkap URL Asli di Balik Short Link",
-      result: null,
+    return res.status(400).json({
+      success: false,
       error: { code: "INVALID_URL", message: "URL tidak boleh kosong." },
-      inputUrl: "",
     });
   }
 
   try {
-    // Resolve the URL
     const { finalUrl, chain } = await unshortenUrl(inputUrl);
 
     // Run safety check and metadata fetch in parallel (both non-critical)
@@ -41,30 +35,31 @@ export const checkUrl = async (req, res) => {
       getMetadata(finalUrl),
     ]);
 
-    return res.render("pages/index", {
-      title: "Reveal Link — Ungkap URL Asli di Balik Short Link",
+    return res.json({
+      success: true,
       result: {
         finalUrl,
         chain,
-        safety: safety.status === "fulfilled" ? safety.value : { status: "unknown", label: "Tidak Diketahui", detail: "" },
-        metadata: metadata.status === "fulfilled" ? metadata.value : { title: null, faviconUrl: null },
+        safety:
+          safety.status === "fulfilled"
+            ? safety.value
+            : { status: "unknown", label: "Tidak Diketahui", detail: "" },
+        metadata:
+          metadata.status === "fulfilled"
+            ? metadata.value
+            : { title: null, faviconUrl: null },
       },
-      error: null,
-      inputUrl,
     });
   } catch (err) {
-    const errorMessage =
+    const message =
       err instanceof UnshortError
         ? err.message
         : "Terjadi kesalahan tidak terduga. Silakan coba lagi.";
+    const code = err instanceof UnshortError ? err.code : "UNKNOWN";
 
-    const errorCode = err instanceof UnshortError ? err.code : "UNKNOWN";
-
-    return res.render("pages/index", {
-      title: "Reveal Link — Ungkap URL Asli di Balik Short Link",
-      result: null,
-      error: { code: errorCode, message: errorMessage },
-      inputUrl,
+    return res.status(422).json({
+      success: false,
+      error: { code, message },
     });
   }
 };

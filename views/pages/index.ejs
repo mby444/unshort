@@ -232,7 +232,7 @@
 
     <!-- Input Card -->
     <div class="glass-card p-6 sm:p-8 mb-6">
-      <form id="check-form" action="/check" method="POST" onsubmit="handleSubmit(event)">
+      <form id="check-form" novalidate>
         <label for="url-input" class="block text-sm font-medium text-slate-300 mb-2">
           Masukkan Short Link
         </label>
@@ -243,14 +243,13 @@
             name="url"
             class="url-input flex-1 px-4 py-3"
             placeholder="https://bit.ly/contoh-link"
-            value="<%= inputUrl ? inputUrl.replace(/\"/g, '&quot;') : '' %>"
-            required
             autocomplete="off"
             spellcheck="false"
           />
           <button
             id="submit-btn"
-            type="submit"
+            type="button"
+            onclick="checkUrl()"
             class="btn-primary px-6 py-3 text-sm flex items-center justify-center gap-2 whitespace-nowrap"
           >
             <svg id="btn-icon" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -265,170 +264,9 @@
       </form>
     </div>
 
-    <!-- Error State -->
-    <% if (error) { %>
-    <div class="animate-result glass-card p-5 mb-6 flex items-start gap-4" style="border-color:rgba(239,68,68,0.25);background:rgba(239,68,68,0.05);">
-      <div class="mt-0.5 w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style="background:rgba(239,68,68,0.15);">
-        <svg class="w-4 h-4 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-        </svg>
-      </div>
-      <div>
-        <p class="font-semibold text-red-400 text-sm mb-0.5">Gagal Memproses Link</p>
-        <p class="text-sm text-slate-400"><%= error.message %></p>
-        <% if (error.code === 'INVALID_URL') { %>
-          <p class="text-xs text-slate-500 mt-1">Pastikan URL diawali dengan <code class="text-slate-400">http://</code> atau <code class="text-slate-400">https://</code></p>
-        <% } %>
-      </div>
-    </div>
-    <% } %>
+    <!-- Dynamic result / error container (populated by axios) -->
+    <div id="result-container"></div>
 
-    <!-- Result State -->
-    <% if (result) { %>
-    <div class="animate-result space-y-5">
-
-      <!-- Final URL Card -->
-      <div class="glass-card p-6">
-        <div class="flex items-center gap-2 mb-4">
-          <div class="w-6 h-6 rounded-md flex items-center justify-center" style="background:rgba(16,185,129,0.15);">
-            <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
-            </svg>
-          </div>
-          <span class="text-sm font-semibold text-emerald-400">URL Final Ditemukan</span>
-
-          <!-- Safety Badge -->
-          <% const s = result.safety; %>
-          <span class="ml-auto text-xs font-medium px-2.5 py-1 rounded-full flex items-center gap-1.5
-            <%= s.status === 'safe' ? 'badge-safe' : s.status === 'warning' ? 'badge-warning' : 'badge-unknown' %>">
-            <% if (s.status === 'safe') { %>
-              <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
-            <% } else if (s.status === 'warning') { %>
-              <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
-            <% } else { %>
-              <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01"/></svg>
-            <% } %>
-            <%= s.label %>
-          </span>
-        </div>
-
-        <!-- Metadata preview -->
-        <% if (result.metadata && (result.metadata.title || result.metadata.faviconUrl)) { %>
-        <div class="flex items-center gap-3 mb-4 p-3 rounded-xl" style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);">
-          <% if (result.metadata.faviconUrl) { %>
-          <img src="<%= result.metadata.faviconUrl %>" alt="favicon" class="w-5 h-5 rounded object-contain flex-shrink-0" onerror="this.style.display='none'" />
-          <% } %>
-          <% if (result.metadata.title) { %>
-          <span class="text-sm text-slate-300 truncate"><%= result.metadata.title %></span>
-          <% } %>
-        </div>
-        <% } %>
-
-        <!-- Final URL display -->
-        <div class="flex items-center gap-3 p-4 rounded-xl" style="background:rgba(124,111,247,0.06);border:1px solid rgba(124,111,247,0.15);">
-          <p id="final-url" class="url-mono flex-1 text-brand-light"><%= result.finalUrl %></p>
-          <div class="flex gap-2 flex-shrink-0">
-            <button
-              id="copy-btn"
-              onclick="copyFinalUrl()"
-              class="btn-copy px-3 py-1.5 flex items-center gap-1.5"
-              title="Salin URL"
-            >
-              <svg id="copy-icon" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
-              </svg>
-              <span id="copy-text">Salin</span>
-            </button>
-            <a
-              href="<%= result.finalUrl %>"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="btn-copy px-3 py-1.5 flex items-center gap-1.5"
-              title="Buka link"
-            >
-              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
-              </svg>
-              Buka
-            </a>
-          </div>
-        </div>
-
-        <% if (result.safety && result.safety.detail) { %>
-        <p class="text-xs text-slate-500 mt-2.5 flex items-center gap-1">
-          <svg class="w-3 h-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-          <%= result.safety.detail %> Hasil pemeriksaan bersifat indikatif, bukan jaminan keamanan mutlak.
-        </p>
-        <% } %>
-      </div>
-
-      <!-- Redirect Chain Card -->
-      <div class="glass-card p-6">
-        <div class="flex items-center justify-between mb-5">
-          <h2 class="text-sm font-semibold text-white flex items-center gap-2">
-            <svg class="w-4 h-4 text-brand" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"/>
-            </svg>
-            Redirect Chain
-          </h2>
-          <span class="text-xs text-slate-500 font-mono"><%= result.chain.length %> hop</span>
-        </div>
-
-        <ol class="space-y-0">
-          <% result.chain.forEach((hop, index) => {
-            const sc = hop.statusCode;
-            let badgeClass = 'badge-3xx';
-            if (sc >= 200 && sc < 300) badgeClass = 'badge-2xx';
-            else if (sc >= 400 && sc < 500) badgeClass = 'badge-4xx';
-            else if (sc >= 500) badgeClass = 'badge-5xx';
-            const isLast = index === result.chain.length - 1;
-          %>
-          <li>
-            <div class="flex items-start gap-3">
-              <!-- Hop number + connector -->
-              <div class="flex flex-col items-center flex-shrink-0">
-                <div class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0
-                  <%= isLast ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-brand/10 text-brand border border-brand/20' %>">
-                  <%= index + 1 %>
-                </div>
-                <% if (!isLast) { %>
-                <div class="chain-connector h-6 w-px my-1"></div>
-                <% } %>
-              </div>
-
-              <!-- Hop info -->
-              <div class="flex-1 pb-<%= isLast ? '0' : '2' %>">
-                <div class="flex items-center gap-2 flex-wrap">
-                  <span class="text-xs font-semibold px-2 py-0.5 rounded-md font-mono <%= badgeClass %>">
-                    <%= hop.statusCode %>
-                  </span>
-                  <% if (isLast) { %>
-                  <span class="text-xs text-emerald-400 font-medium">Tujuan Akhir</span>
-                  <% } %>
-                </div>
-                <p class="url-mono text-slate-300 mt-1.5 text-sm leading-snug hover:text-white transition-colors">
-                  <%= hop.url %>
-                </p>
-              </div>
-            </div>
-          </li>
-          <% }); %>
-        </ol>
-      </div>
-
-    </div>
-
-    <script>
-      // Save this result to localStorage history
-      if (window.RevealHistory) {
-        window.RevealHistory.saveEntry(
-          '<%= inputUrl.replace(/'/g, "\\'") %>',
-          '<%= result.finalUrl.replace(/'/g, "\\'") %>',
-          <%= result.chain.length %>
-        );
-      }
-    </script>
-    <% } %>
 
     <!-- History Section -->
     <div id="history-section" class="hidden mt-8">
@@ -463,39 +301,242 @@
   <!-- History JS -->
   <script src="/js/history.js"></script>
 
+  <!-- axios CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
   <script>
-    // Loading state on form submit
-    function handleSubmit(e) {
-      const btn = document.getElementById('submit-btn');
+    // ─── Helpers ───────────────────────────────────────────────────────────────
+
+    const ICON_SEARCH = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>`;
+    const ICON_SPIN   = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>`;
+    const ICON_COPY   = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>`;
+    const ICON_CHECK  = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>`;
+
+    function setLoading(loading) {
+      const btn     = document.getElementById('submit-btn');
       const btnText = document.getElementById('btn-text');
       const btnIcon = document.getElementById('btn-icon');
-      const input = document.getElementById('url-input');
-
-      if (!input.value.trim()) return;
-
-      btn.disabled = true;
-      btnText.textContent = 'Memproses…';
-      btnIcon.outerHTML = `<svg class="w-4 h-4 spinner" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
-      </svg>`;
+      btn.disabled          = loading;
+      btnText.textContent   = loading ? 'Memproses…' : 'Cek Link';
+      btnIcon.innerHTML     = loading ? ICON_SPIN : ICON_SEARCH;
+      btnIcon.className     = loading ? 'w-4 h-4 spinner' : 'w-4 h-4';
     }
 
-    // Copy to clipboard
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function badgeClass(sc) {
+      if (sc >= 200 && sc < 300) return 'badge-2xx';
+      if (sc >= 300 && sc < 400) return 'badge-3xx';
+      if (sc >= 400 && sc < 500) return 'badge-4xx';
+      return 'badge-5xx';
+    }
+
+    function safetyBadgeClass(status) {
+      if (status === 'safe')    return 'badge-safe';
+      if (status === 'warning') return 'badge-warning';
+      return 'badge-unknown';
+    }
+
+    function safetyIcon(status) {
+      if (status === 'safe') return `<svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>`;
+      if (status === 'warning') return `<svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>`;
+      return `<svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01"/></svg>`;
+    }
+
+    // ─── Render helpers ────────────────────────────────────────────────────────
+
+    function renderError(error) {
+      const hint = error.code === 'INVALID_URL'
+        ? `<p class="text-xs text-slate-500 mt-1">Pastikan URL diawali dengan <code class="text-slate-400">http://</code> atau <code class="text-slate-400">https://</code></p>`
+        : '';
+      return `
+        <div class="animate-result glass-card p-5 mb-6 flex items-start gap-4"
+             style="border-color:rgba(239,68,68,0.25);background:rgba(239,68,68,0.05);">
+          <div class="mt-0.5 w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
+               style="background:rgba(239,68,68,0.15);">
+            <svg class="w-4 h-4 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+          </div>
+          <div>
+            <p class="font-semibold text-red-400 text-sm mb-0.5">Gagal Memproses Link</p>
+            <p class="text-sm text-slate-400">${escapeHtml(error.message)}</p>
+            ${hint}
+          </div>
+        </div>`;
+    }
+
+    function renderResult(result, inputUrl) {
+      const { finalUrl, chain, safety, metadata } = result;
+      const s = safety || { status: 'unknown', label: 'Tidak Diketahui', detail: '' };
+
+      // Metadata preview
+      const metaHtml = (metadata && (metadata.title || metadata.faviconUrl)) ? `
+        <div class="flex items-center gap-3 mb-4 p-3 rounded-xl"
+             style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);">
+          ${metadata.faviconUrl ? `<img src="${escapeHtml(metadata.faviconUrl)}" alt="favicon" class="w-5 h-5 rounded object-contain flex-shrink-0" onerror="this.style.display='none'"/>` : ''}
+          ${metadata.title ? `<span class="text-sm text-slate-300 truncate">${escapeHtml(metadata.title)}</span>` : ''}
+        </div>` : '';
+
+      // Safety disclaimer
+      const safetyNote = s.detail ? `
+        <p class="text-xs text-slate-500 mt-2.5 flex items-center gap-1">
+          <svg class="w-3 h-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          ${escapeHtml(s.detail)} Hasil pemeriksaan bersifat indikatif, bukan jaminan keamanan mutlak.
+        </p>` : '';
+
+      // Redirect chain hops
+      const chainHtml = chain.map((hop, i) => {
+        const isLast  = i === chain.length - 1;
+        const hopBadge = badgeClass(hop.statusCode);
+        const numClass = isLast
+          ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+          : 'bg-brand/10 text-brand border border-brand/20';
+        const connector = isLast ? '' : `<div class="chain-connector h-6 w-px my-1"></div>`;
+        const lastLabel  = isLast ? `<span class="text-xs text-emerald-400 font-medium">Tujuan Akhir</span>` : '';
+        return `
+          <li>
+            <div class="flex items-start gap-3">
+              <div class="flex flex-col items-center flex-shrink-0">
+                <div class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${numClass}">${i + 1}</div>
+                ${connector}
+              </div>
+              <div class="flex-1 ${isLast ? '' : 'pb-2'}">
+                <div class="flex items-center gap-2 flex-wrap">
+                  <span class="text-xs font-semibold px-2 py-0.5 rounded-md font-mono ${hopBadge}">${hop.statusCode}</span>
+                  ${lastLabel}
+                </div>
+                <p class="url-mono text-slate-300 mt-1.5 text-sm leading-snug hover:text-white transition-colors">${escapeHtml(hop.url)}</p>
+              </div>
+            </div>
+          </li>`;
+      }).join('');
+
+      return `
+        <div class="animate-result space-y-5">
+
+          <!-- Final URL Card -->
+          <div class="glass-card p-6">
+            <div class="flex items-center gap-2 mb-4">
+              <div class="w-6 h-6 rounded-md flex items-center justify-center" style="background:rgba(16,185,129,0.15);">
+                <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+                </svg>
+              </div>
+              <span class="text-sm font-semibold text-emerald-400">URL Final Ditemukan</span>
+              <span class="ml-auto text-xs font-medium px-2.5 py-1 rounded-full flex items-center gap-1.5 ${safetyBadgeClass(s.status)}">
+                ${safetyIcon(s.status)} ${escapeHtml(s.label)}
+              </span>
+            </div>
+            ${metaHtml}
+            <div class="flex items-center gap-3 p-4 rounded-xl" style="background:rgba(124,111,247,0.06);border:1px solid rgba(124,111,247,0.15);">
+              <p id="final-url" class="url-mono flex-1 text-brand-light">${escapeHtml(finalUrl)}</p>
+              <div class="flex gap-2 flex-shrink-0">
+                <button id="copy-btn" onclick="copyFinalUrl()" class="btn-copy px-3 py-1.5 flex items-center gap-1.5" title="Salin URL">
+                  <svg id="copy-icon" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">${ICON_COPY}</svg>
+                  <span id="copy-text">Salin</span>
+                </button>
+                <a href="${escapeHtml(finalUrl)}" target="_blank" rel="noopener noreferrer"
+                   class="btn-copy px-3 py-1.5 flex items-center gap-1.5" title="Buka link">
+                  <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                  </svg>
+                  Buka
+                </a>
+              </div>
+            </div>
+            ${safetyNote}
+          </div>
+
+          <!-- Redirect Chain Card -->
+          <div class="glass-card p-6">
+            <div class="flex items-center justify-between mb-5">
+              <h2 class="text-sm font-semibold text-white flex items-center gap-2">
+                <svg class="w-4 h-4 text-brand" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"/>
+                </svg>
+                Redirect Chain
+              </h2>
+              <span class="text-xs text-slate-500 font-mono">${chain.length} hop</span>
+            </div>
+            <ol class="space-y-0">${chainHtml}</ol>
+          </div>
+
+        </div>`;
+    }
+
+    // ─── Main: check URL via axios ─────────────────────────────────────────────
+
+    async function checkUrl() {
+      const input     = document.getElementById('url-input');
+      const container = document.getElementById('result-container');
+      const inputUrl  = input.value.trim();
+
+      if (!inputUrl) {
+        container.innerHTML = renderError({ code: 'INVALID_URL', message: 'URL tidak boleh kosong.' });
+        container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        return;
+      }
+
+      setLoading(true);
+      container.innerHTML = '';
+
+      try {
+        const { data } = await axios.post('/check', { url: inputUrl }, {
+          headers: { 'Content-Type': 'application/json' },
+        });
+
+        if (data.success) {
+          container.innerHTML = renderResult(data.result, inputUrl);
+          // Save to localStorage history
+          if (window.RevealHistory) {
+            window.RevealHistory.saveEntry(inputUrl, data.result.finalUrl, data.result.chain.length);
+          }
+        } else {
+          container.innerHTML = renderError(data.error);
+        }
+      } catch (err) {
+        const apiError = err.response?.data?.error;
+        container.innerHTML = renderError(
+          apiError || { code: 'UNKNOWN', message: 'Terjadi kesalahan tidak terduga. Silakan coba lagi.' }
+        );
+      } finally {
+        setLoading(false);
+        container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+    }
+
+    // Allow pressing Enter in the input field
+    document.getElementById('url-input').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') checkUrl();
+    });
+
+    // ─── Copy to clipboard ─────────────────────────────────────────────────────
+
     async function copyFinalUrl() {
       const url = document.getElementById('final-url')?.textContent?.trim();
       if (!url) return;
       try {
         await navigator.clipboard.writeText(url);
-        const copyText = document.getElementById('copy-text');
-        const copyIcon = document.getElementById('copy-icon');
-        if (copyText) copyText.textContent = 'Tersalin!';
-        if (copyIcon) copyIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>';
+        document.getElementById('copy-text').textContent = 'Tersalin!';
+        document.getElementById('copy-icon').innerHTML   = ICON_CHECK;
         setTimeout(() => {
-          if (copyText) copyText.textContent = 'Salin';
-          if (copyIcon) copyIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>';
+          const ct = document.getElementById('copy-text');
+          const ci = document.getElementById('copy-icon');
+          if (ct) ct.textContent = 'Salin';
+          if (ci) ci.innerHTML   = ICON_COPY;
         }, 2000);
       } catch {
-        // Fallback
         const ta = document.createElement('textarea');
         ta.value = url;
         document.body.appendChild(ta);
